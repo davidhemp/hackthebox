@@ -1,1 +1,1 @@
-/usr/bin/python3 /tmp/reverse.py
+/usr/bin/python3 /tmp/reverse.py 2>&1 | tee /tmp/reverse.py.log
